@@ -1,0 +1,58 @@
+---
+- name: Ansible apt module example
+  hosts: all
+  remote_user: admini
+  become: true
+  tasks:  
+    # - name: Install a list of packages
+    #   apt:
+    #     pkg:
+    #     - net-tools
+    #     - bird
+    #     - lldp
+    #     - openssh-server
+    - name: user d.alexeev present
+      ansible.builtin.user:
+        name: d.alexeev
+        password: "{{ 's.ivannikov' | password_hash('sha512', 'd.alexeev') }}"
+        groups:
+          - sudo
+        state: "present"
+        shell: "/bin/bash"
+        system: false
+        create_home: true
+        home: "/home/d.alexeev"
+        comment: "Ansible d.alexeev"
+        generate_ssh_key: true
+    - name: user s.ivannikov present
+      ansible.builtin.user:
+        name: s.ivannikov
+        password: "{{ 's.ivannikov' | password_hash('sha512', 's.ivannikov') }}"
+        groups:
+          - sudo
+        state: "present"
+        shell: "/bin/bash"
+        system: false
+        create_home: true
+        home: "/home/s.ivannikov"
+        comment: "Ansible s.ivannikov"
+        generate_ssh_key: true
+    - name: Disallow SSH password authentication
+      lineinfile:
+        dest=/etc/ssh/sshd_config
+        regexp="^PasswordAuthentication"
+        line="PasswordAuthentication no"
+        state=present
+    - name: Enable Root Login
+      lineinfile:
+        dest: /etc/ssh/sshd_config
+        regexp: '^PermitRootLogin'
+        line: "PermitRootLogin no"
+        state: present
+        backup: yes
+      become: yes
+    - name: Stop and Start ssh
+      service:
+        name: ssh
+        state: restarted
+
