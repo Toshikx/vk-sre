@@ -11,10 +11,10 @@ done
 
 #копируем файлы на удалённую машину
 
-scp /var/log/*.log ${username}@${host}:${destination_folder}
+scp /var/log/*.log ${user}@${host}:${destination_folder}
 
 #отправляем find на хостовую машину для поиска файлов старше 7 дней
 
-ssh ${username}@${host} find ${destination_folder} -type f -name "file*.log" -mtime +7 -delete
+ssh ${user}@${host} find ${destination_folder} -type f -name "file*.log" -mtime +7 -delete
 
 #в cronetab закинуть запись 00 00 * * * userToRunScript /path/to/script/logs.sh userToConnect hostToConnect folderOnHost
